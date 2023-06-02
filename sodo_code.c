@@ -27,44 +27,8 @@ IF argc = 2
 ELSE
     execute_from_stdin(argv);
 */
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <limits.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <signal.h>
 
-extern char **environ;
-
-typedef struct built_fun
-{
-	char *cmd;
-	void(*fun)(char **commands);
-} Built_fun;
-
-void execute_from_file(char **argv, Built_fun *built);
-void handle_line(char *line, char **argv, Built_fun *built);
-void prompt();
-void handle_hash(char *line, int line_len);
-void run_fork(char *arg0, char **args);
-void file_error(char *arg0, char *file);
-void handle_new_line(char *line, int line_len);
-int check_builtin(char **args, Built_fun *built);
-void check_command(char **argv, char **args);
-void exe(char *arg0, char **args);
-void execute_from_stdin(char **argv, Built_fun *built);
-void ctrl_c(int signum);
-void handle_cd();
-void handle_env();
-void handle_exit();
-void handle_echo();
-void handle_alias();
-void handle_clear();
+#include "main.h"
 
 int main(int argc, char **argv)
 {
@@ -79,9 +43,9 @@ int main(int argc, char **argv)
 	};
 
 	if (argc == 2)
-		execute_from_file(argv, &built);
+		execute_from_file(argv, built);
 	else
-		execute_from_stdin(argv, &built);
+		execute_from_stdin(argv, built);
 
 	return (0);
 }
@@ -124,8 +88,8 @@ void handle_line(char *line, char **argv, Built_fun *built)
 
 void prompt()
 {
-	if (isatty(stdin))
-		write(STDIN_FILENO, "($) ", 4);
+	if (isatty(STDIN_FILENO))
+		write(STDOUT_FILENO, "($) ", 4);
 }
 
 void handle_hash(char *line, int line_len)
@@ -173,11 +137,9 @@ void handle_new_line(char *line, int line_len)
 
 int check_builtin(char **args, Built_fun *built)
 {
-	int i = 0;
-
 	while(built->cmd)
 	{
-		if (_strcmp(args[0], built->cmd) == 0)
+		if (_strcmp_(args[0], built->cmd) == 0)
 		{
 			built->fun(args);
 			return (0);
@@ -209,7 +171,7 @@ void check_command(char **argv, char **args)
 			}
 			path_tok = _strtok(NULL, ":");
 		}
-		file_error(argv[0], path);
+		file_error(argv[0], args[0]);
 	}
 	else
 	{
@@ -237,12 +199,12 @@ void execute_from_stdin(char **argv, Built_fun *built)
 	while(1)
 	{
 		prompt();
-		signal(SIGINT, ctrl_c)
+		signal(SIGINT, ctrl_c);
 		if (getline(&line, &n, stdin) != -1)
 			handle_line(line, argv, built);
 		else
 		{
-			if (!isatty(stdin))
+			if (!isatty(STDIN_FILENO))
 				write(STDIN_FILENO, "\n", 1);
 			break;
 		}
@@ -252,35 +214,36 @@ void execute_from_stdin(char **argv, Built_fun *built)
 void ctrl_c(int signum)
 {
 	(void)signum;
+	write(STDOUT_FILENO, "\n", 1);
 	prompt();
 }
 
 void handle_cd()
 {
-	printf("Hello");
+	printf("Hello\n");
 }
 
 void handle_env()
 {
-	printf("Hello");
+	printf("Hello\n");
 }
 
 void handle_exit()
 {
-	printf("Hello");
+	printf("Hello\n");
 }
 
 void handle_echo()
 {
-	printf("Hello");
+	printf("Hello\n");
 }
 
 void handle_alias()
 {
-	printf("Hello");
+	printf("Hello\n");
 }
 
 void handle_clear()
 {
-	printf("Hello");
+	printf("Hello\n");
 }
