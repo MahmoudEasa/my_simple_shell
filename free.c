@@ -9,9 +9,12 @@ void _free(char **cmd)
 {
 	int i;
 
-	for (i = 0; cmd[i]; i++)
-		free(cmd[i]);
+	if (cmd)
+	{
+		for (i = 0; cmd[i]; i++)
+			free(cmd[i]);
 
-	free(cmd);
+		free(cmd);
+	}
 }
 

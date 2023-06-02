@@ -64,14 +64,19 @@ void execute_from_file(char **argv, Built_fun *built)
 		}
 
 		while (getline(&line, &n, fp) != -1)
+		{
 			handle_line(line, argv, built);
+			line = NULL;
+		}
+		if (line)
+			free(line);
 	fclose(fp);
 }
 
 void handle_line(char *line, char **argv, Built_fun *built)
 {
 	int line_len;
-	char **args;
+	char **args = NULL;
 
 	line_len = _strlen(line);
 	handle_new_line(line, line_len);
@@ -83,7 +88,8 @@ void handle_line(char *line, char **argv, Built_fun *built)
 	/* if check_builtin == 1 no builtin command */
 	if (check_builtin(args, built) == 1)
 		check_command(argv, args);
-	_free(args);
+	if (args)
+		_free(args);
 }
 
 void prompt()
@@ -137,10 +143,17 @@ void handle_new_line(char *line, int line_len)
 
 int check_builtin(char **args, Built_fun *built)
 {
+	int arg0_len = _strlen(args[0]);
+	int cmd_len;
+
 	while(built->cmd)
 	{
 		if (_strcmp_(args[0], built->cmd) == 0)
 		{
+			cmd_len = _strlen(built->cmd);
+			if (arg0_len != cmd_len)
+				return (1);
+
 			built->fun(args);
 			return (0);
 		}
@@ -193,19 +206,21 @@ void exe(char *arg0, char **args)
 
 void execute_from_stdin(char **argv, Built_fun *built)
 {
-	char *line = NULL;
+	char *line;
 	size_t n;
 
 	while(1)
 	{
 		prompt();
 		signal(SIGINT, ctrl_c);
+		line = NULL;
 		if (getline(&line, &n, stdin) != -1)
 			handle_line(line, argv, built);
 		else
 		{
-			if (!isatty(STDIN_FILENO))
+			if (isatty(STDIN_FILENO))
 				write(STDIN_FILENO, "\n", 1);
+			free(line);
 			break;
 		}
 	}
@@ -218,32 +233,32 @@ void ctrl_c(int signum)
 	prompt();
 }
 
-void handle_cd()
+void handle_cd(char **args)
 {
-	printf("Hello\n");
+	printf("Hello %s\n", args[0]);
 }
 
-void handle_env()
+void handle_env(char **args)
 {
-	printf("Hello\n");
+	printf("Hello %s\n", args[0]);
 }
 
-void handle_exit()
+void handle_exit(char **args)
 {
-	printf("Hello\n");
+	printf("Hello %s\n", args[0]);
 }
 
-void handle_echo()
+void handle_echo(char **args)
 {
-	printf("Hello\n");
+	printf("Hello %s\n", args[0]);
 }
 
-void handle_alias()
+void handle_alias(char **args)
 {
-	printf("Hello\n");
+	printf("Hello %s\n", args[0]);
 }
 
-void handle_clear()
+void handle_clear(char **args)
 {
-	printf("Hello\n");
+	printf("Hello %s\n", args[0]);
 }
