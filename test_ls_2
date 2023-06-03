@@ -5,5 +5,8 @@ clear
 ls -l
 /bin/ls -l -h
 /bin/ls -l -h -a
+ls /var ; ls /var
+ls /hbtn ; ls /var
+ls /var ; ls /hbtn ; ls /var ; ls /var
 echo "Mahmoud"
 echo "Lobna :)"

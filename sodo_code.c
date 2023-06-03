@@ -1,16 +1,20 @@
 /*[
     Exit Status
-        0		The script to be executed consisted solely of zero or
+        0	The script to be executed consisted solely of zero or
             	more blank lines or comments, or both.
+
         1-125	A non-interactive shell detected an error other than
                 command_file not found or executable, including but not
                 limited to syntax, redirection, or variable assignment
                 errors.
-        126		A specified command_file could not be executed due to an
+
+        126	A specified command_file could not be executed due to an
                 [ENOEXEC] error (see Section 2.9.1.1, Command Search and
                 Execution, item 2).
-        127		A specified command_file could not be found by a non-
+
+        127	A specified command_file could not be found by a non-
                 interactive shell.
+
         Otherwise, the shell shall return the exit status of the last
         command it invoked or attempted to invoke (see also the exit
         utility in Section 2.14, Special Built-In Utilities).
@@ -24,7 +28,7 @@
 
 1- getline
 2- strtok
-3- Handle ;, &&, ||
+3- Handle ; && ||
 4- Handle variables replacement
 	Handle the $? variable
 	Handle the $$ variable
@@ -83,21 +87,71 @@ void execute_from_file(char **argv, Built_fun *built)
 
 void handle_line(char *line, char **argv, Built_fun *built)
 {
-	int line_len;
+	int line_len, status;
 	char **args = NULL;
 
+	if (!line)
+		return;
 	line_len = _strlen(line);
 	handle_new_line(line, line_len);
+	/* handle_s_sep => ; */
+	if (handle_s_sep(line, line_len, argv, built) == 1)
+		return;
+	/* handle_logic_sep => && || */
+/*	if (handle_logic_sep(line, line_len, argv, built) == 0)
+		return;*/
+
 	args = split_str(line, " \t");
 	free(line);
 	if (!args)
 		return;
-	/* if check_builtin == 1 no builtin command */
+
 	handle_hash(args);
+	/* if check_builtin == 1 no builtin command */
 	if (check_builtin(args, built) == 1)
-		check_command(argv, args);
+		check_command(argv, args, &status);
 	if (args)
 		_free(args);
+}
+
+int handle_s_sep(char *line, int line_len, char **argv, Built_fun *built)
+{
+	int found = 0, i, status;
+	char **args = NULL, **args2 = NULL;
+
+	for (i = 0; i < line_len; i++)
+	{
+		if (line[i] == ';')
+		{
+			found = 1;
+			args = split_str(line, ";");
+			free(line);
+			if (!args)
+				exit(EXIT_FAILURE);
+			i = 0;
+			while (args[i])
+			{
+				args2 = split_str(args[i], " \t");
+				if (!args2)
+				{
+					_free(args);
+					exit(EXIT_FAILURE);
+				}
+				handle_hash(args2);
+				/* if check_builtin == 1 no builtin command */
+				if (check_builtin(args2, built) == 1)
+					check_command(argv, args2, &status);
+				if (args2)
+					_free(args2);
+				i++;
+				args2 = NULL;
+			}
+			if (args)
+				_free(args);
+			break;
+		}
+	}
+	return (found);
 }
 
 void prompt()
@@ -124,10 +178,9 @@ void handle_hash(char **args)
 	}
 }
 
-void run_fork(char *arg0, char **args)
+void run_fork(char *arg0, char **args, int *status)
 {
 	pid_t pid;
-	int status;
 
 	pid = fork();
 	if (pid == -1)
@@ -138,7 +191,7 @@ void run_fork(char *arg0, char **args)
 	if (pid == 0)
 		exe(arg0, args);
 	else
-		wait(&status);
+		waitpid(pid, status, 0);
 }
 
 void file_error(char *arg0, char *file)
@@ -176,7 +229,7 @@ int check_builtin(char **args, Built_fun *built)
 	return (1);
 }
 
-void check_command(char **argv, char **args)
+void check_command(char **argv, char **args, int *status)
 {
 	char *paths, path[100], *path_tok;
 	struct stat st;
@@ -193,17 +246,19 @@ void check_command(char **argv, char **args)
 
 			if (stat(path, &st) == 0)
 			{
-				run_fork(path, args);
+				run_fork(path, args, status);
 				return;
 			}
 			path_tok = _strtok(NULL, ":");
 		}
 		file_error(argv[0], args[0]);
+		if (!isatty(STDIN_FILENO))
+			exit(127);
 	}
 	else
 	{
 		if (stat(args[0], &st) == 0)
-			run_fork(args[0], args);
+			run_fork(args[0], args, status);
 		else
 			file_error(argv[0], args[0]);
 	}
