@@ -32,7 +32,7 @@ typedef struct built_fun
 void execute_from_file(char **argv, Built_fun *built);
 void handle_line(char *line, char **argv, Built_fun *built);
 void prompt();
-void handle_hash(char *line, int line_len);
+void handle_hash(char **args);
 void run_fork(char *arg0, char **args);
 void file_error(char *arg0, char *file);
 void handle_new_line(char *line, int line_len);
@@ -44,7 +44,8 @@ void ctrl_c(int signum);
 void handle_cd(char **args);
 void handle_env(char **args);
 void handle_exit(char **args);
-void handle_echo(char **args);
+void handle_setenv(char **args);
+void handle_unsetenv(char **args);
 void handle_alias(char **args);
 void handle_clear(char **args);
 void _free(char **cmd);

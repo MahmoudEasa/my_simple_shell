@@ -22,6 +22,13 @@
         ./././hsh: 1: qwerty: not found
 ]
 
+1- getline
+2- strtok
+3- Handle ;, &&, ||
+4- Handle variables replacement
+	Handle the $? variable
+	Handle the $$ variable
+
 IF argc = 2
     execute_from_file(argv);
 ELSE
@@ -32,11 +39,12 @@ ELSE
 
 int main(int argc, char **argv)
 {
-	Built_fun built[7] = {
+	Built_fun built[8] = {
 		{"cd", handle_cd},
 		{"env", handle_env},
 		{"exit", handle_exit},
-		{"echo", handle_echo},
+		{"setenv", handle_setenv},
+		{"unsetenv", handle_unsetenv},
 		{"alias", handle_alias},
 		{"clear", handle_clear},
 		{NULL, NULL},
@@ -80,12 +88,12 @@ void handle_line(char *line, char **argv, Built_fun *built)
 
 	line_len = _strlen(line);
 	handle_new_line(line, line_len);
-	handle_hash(line, line_len);
 	args = split_str(line, " \t");
 	free(line);
 	if (!args)
 		return;
 	/* if check_builtin == 1 no builtin command */
+	handle_hash(args);
 	if (check_builtin(args, built) == 1)
 		check_command(argv, args);
 	if (args)
@@ -98,16 +106,22 @@ void prompt()
 		write(STDOUT_FILENO, "($) ", 4);
 }
 
-void handle_hash(char *line, int line_len)
+void handle_hash(char **args)
 {
-	int i;
+	int i = 0, j;
 
-	for (i = 0; i < line_len; i++)
-		if (line[i] == '#')
+	while (args[i])
+	{
+		if (*args[i] == '#')
 		{
-			line[i] = '\0';
+			j = i;
+			while (args[j])
+				free(args[j++]);
+			args[i] = NULL;
 			break;
 		}
+		i++;
+	}
 }
 
 void run_fork(char *arg0, char **args)
@@ -248,7 +262,12 @@ void handle_exit(char **args)
 	printf("Hello %s\n", args[0]);
 }
 
-void handle_echo(char **args)
+void handle_setenv(char **args)
+{
+	printf("Hello %s\n", args[0]);
+}
+
+void handle_unsetenv(char **args)
 {
 	printf("Hello %s\n", args[0]);
 }
