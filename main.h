@@ -43,12 +43,10 @@ void exe(char *arg0, char **args);
 void execute_from_stdin(char **argv, Built_fun *built);
 void ctrl_c(int signum);
 void handle_cd(char **args);
-void handle_env(char **args);
 void handle_exit(char **args);
 void handle_setenv(char **args);
 void handle_unsetenv(char **args);
 void handle_alias(char **args);
-void handle_clear(char **args);
 void _free(char **cmd);
 char *_getenv(char *name);
 char **split_str(char *str, char *tok);
@@ -58,6 +56,15 @@ char *_strcpy(char *dest, char *src);
 int _strlen(char *s);
 char *_strtok(char *str, char *delims);
 int _strcmp_(char *s1, char *s2);
+int _atoi(char *s);
+void _chdir(char **path);
+char *check_path(char **path, char *old_path, char *new_path, char *name_var);
+void update_pwd(char *old_path, char *new_path);
+void free_paths(char *old_path, char *new_path, char **path);
+void handle_error(char *path);
+int _setenv_(char *var_name, char *new_value, int flag);
+char *concat(char *var_name, char *new_value);
+int environ_size(char **env);
 
 #endif /* #ifndef MAIN_H */
 

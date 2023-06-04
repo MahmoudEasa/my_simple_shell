@@ -44,13 +44,11 @@ ELSE
 int main(int argc, char **argv)
 {
 	Built_fun built[8] = {
-		{"cd", handle_cd},
-		{"env", handle_env},
+		{"cd", _chdir},
 		{"exit", handle_exit},
 		{"setenv", handle_setenv},
 		{"unsetenv", handle_unsetenv},
 		{"alias", handle_alias},
-		{"clear", handle_clear},
 		{NULL, NULL},
 	};
 
@@ -98,7 +96,7 @@ void handle_line(char *line, char **argv, Built_fun *built)
 	if (handle_s_sep(line, line_len, argv, built) == 1)
 		return;
 	/* handle_logic_sep => && || */
-/*	if (handle_logic_sep(line, line_len, argv, built) == 0)
+/*	if (handle_logic_sep(line, line_len, argv, built) == 1)
 		return;*/
 
 	args = split_str(line, " \t");
@@ -307,14 +305,21 @@ void handle_cd(char **args)
 	printf("Hello %s\n", args[0]);
 }
 
-void handle_env(char **args)
-{
-	printf("Hello %s\n", args[0]);
-}
-
 void handle_exit(char **args)
 {
-	printf("Hello %s\n", args[0]);
+	int num;
+
+	if (args[1])
+	{
+		num = _atoi(args[1]);
+		_free(args);
+		exit(num);
+	}
+	else
+	{
+		_free(args);
+		exit(EXIT_SUCCESS);
+	}
 }
 
 void handle_setenv(char **args)
@@ -332,7 +337,3 @@ void handle_alias(char **args)
 	printf("Hello %s\n", args[0]);
 }
 
-void handle_clear(char **args)
-{
-	printf("Hello %s\n", args[0]);
-}
