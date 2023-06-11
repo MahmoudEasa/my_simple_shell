@@ -1,4 +1,4 @@
-#include "main.h"
+#include "shell.h"
 
 /**
  * split_str - split string

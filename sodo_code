@@ -1,0 +1,43 @@
+/*[
+    Exit Status
+        0	The script to be executed consisted solely of zero or
+            	more blank lines or comments, or both.
+
+        1-125	A non-interactive shell detected an error other than
+                command_file not found or executable, including but not
+                limited to syntax, redirection, or variable assignment
+                errors.
+
+        126	A specified command_file could not be executed due to an
+                [ENOEXEC] error (see Section 2.9.1.1, Command Search and
+                Execution, item 2).
+
+        127	A specified command_file could not be found by a non-
+                interactive shell.
+
+        Otherwise, the shell shall return the exit status of the last
+        command it invoked or attempted to invoke (see also the exit
+        utility in Section 2.14, Special Built-In Utilities).
+
+        Same error with your program hsh:
+        $ echo "qwerty" | ./hsh
+        ./hsh: 1: qwerty: not found
+        $ echo "qwerty" | ./././hsh
+        ./././hsh: 1: qwerty: not found
+]
+
+1- getline
+2- Handle && ||
+3- Handle variables replacement
+	Handle the $? variable
+	Handle the $$ variable
+4- setenv
+5- unsetenv
+6- alias
+
+IF argc = 2
+    execute_from_file(argv);
+ELSE
+    execute_from_stdin(argv);
+*/
+

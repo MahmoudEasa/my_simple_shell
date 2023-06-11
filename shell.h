@@ -1,5 +1,5 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef SHELL_H
+#define SHELL_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +16,7 @@
 extern char **environ;
 
 /**
- * built_fun - handle commands
+ * struct built_fun - handle commands
  * @cmd: command
  * @fun: function
  *
@@ -26,12 +26,12 @@ extern char **environ;
 typedef struct built_fun
 {
 	char *cmd;
-	void(*fun)(char **commands);
+	void (*fun)(char **commands);
 } Built_fun;
 
 void execute_from_file(char **argv, Built_fun *built);
 void handle_line(char *line, char **argv, Built_fun *built);
-void prompt();
+void prompt(void);
 void handle_hash(char **args);
 void run_fork(char *arg0, char **args, int *status);
 void file_error(char *arg0, char *file);
@@ -66,5 +66,5 @@ int _setenv_(char *var_name, char *new_value, int flag);
 char *concat(char *var_name, char *new_value);
 int environ_size(char **env);
 
-#endif /* #ifndef MAIN_H */
+#endif /* #ifndef SHELL_H */
 
