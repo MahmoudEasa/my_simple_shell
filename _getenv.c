@@ -8,12 +8,11 @@
 
 char *_getenv(char *name)
 {
-	int i;
-	int len;
+	int i, len;
 	char *value = NULL;
 
 	len = _strlen(name);
-	for (i = 0; *environ[i]; i++)
+	for (i = 0; environ[i]; i++)
 	{
 		if (_strcmp(environ[i], name, len) == 0 && environ[i][len] == '=')
 		{

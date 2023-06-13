@@ -10,21 +10,25 @@
 
 int check_builtin(char **args, Built_fun *built)
 {
-	int arg0_len = _strlen(args[0]);
+	int arg0_len;
 	int cmd_len;
 
-	while (built->cmd)
+	if (args[0])
 	{
-		if (_strcmp_(args[0], built->cmd) == 0)
+		arg0_len = _strlen(args[0]);
+		while (built->cmd)
 		{
-			cmd_len = _strlen(built->cmd);
-			if (arg0_len != cmd_len)
-				return (0);
+			if (_strcmp_(args[0], built->cmd) == 0)
+			{
+				cmd_len = _strlen(built->cmd);
+				if (arg0_len != cmd_len)
+					return (0);
 
-			built->fun(args);
-			return (1);
+				built->fun(args);
+				return (1);
+			}
+			built++;
 		}
-		built++;
 	}
 	return (0);
 }

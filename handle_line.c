@@ -29,7 +29,6 @@ void handle_line(char *line, char **argv, Built_fun *built)
 		return;
 
 	handle_hash(args);
-	/* if check_builtin == 0 no builtin command */
 	if (!check_builtin(args, built))
 		check_command(argv, args, &status);
 	if (args)
