@@ -7,5 +7,7 @@ ls -l
 ls /var ; ls /var
 ls /hbtn ; ls /var
 ls /var ; ls /hbtn ; ls /var ; ls /var
+dfs
 echo "Mahmoud"
 echo "Lobna :)"
+

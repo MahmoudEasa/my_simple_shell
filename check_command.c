@@ -33,7 +33,10 @@ void check_command(char **argv, char **args, int *status)
 			}
 			file_error(argv[0], args[0]);
 			if (!isatty(STDIN_FILENO))
+			{
+				_free(args);
 				exit(127);
+			}
 		}
 		else
 		{

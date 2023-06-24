@@ -6,13 +6,15 @@
  * @line_len: integer
  * @argv: array of arguments
  * @built: struct to handle builtin functions
+ * @status: integer
  *
  * Return: 1 if there is the ; separator or 0 if not
  */
 
-int handle_s_sep(char *line, int line_len, char **argv, Built_fun *built)
+int handle_s_sep(char *line, int line_len, char **argv,
+		Built_fun *built, int *status)
 {
-	int found = 0, i, status, arg2_0_len;
+	int found = 0, i, arg2_0_len;
 	char **args = NULL, **args2 = NULL;
 
 	for (i = 0; i < line_len; i++)
@@ -39,8 +41,8 @@ int handle_s_sep(char *line, int line_len, char **argv, Built_fun *built)
 						arg2_0_len == _strlen("exit"))
 					_free(args);
 
-				if (!check_builtin(args2, built))
-					check_command(argv, args2, &status);
+				if (!check_builtin(argv, args2, built, status))
+					check_command(argv, args2, status);
 				if (args2)
 					_free(args2);
 				i++;

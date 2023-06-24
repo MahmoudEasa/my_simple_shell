@@ -2,11 +2,16 @@
 
 /**
  * handle_cd - handle command cd
+ * @argv: array of arguments
  * @args: array of line command
+ * @status: integer
  */
 
-void handle_cd(char **args)
+void handle_cd(char **argv, char **args, int *status)
 {
-	_chdir(args);
+	(void)argv;
+	(void)status;
+
+	_chdir(argv, args);
 }
 

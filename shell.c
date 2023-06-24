@@ -10,10 +10,11 @@
 
 int main(int argc, char **argv)
 {
-	Built_fun built[8] = {
+	Built_fun built[] = {
 		{"cd", handle_cd},
 		{"exit", handle_exit},
 		{"setenv", handle_setenv},
+		{"env", handle_env},
 		{"unsetenv", handle_unsetenv},
 		{"alias", handle_alias},
 		{NULL, NULL},
